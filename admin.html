@@ -280,6 +280,7 @@
                         <tr>
                             <th>ID</th>
                             <th>User Email</th>
+                            <th>Mobile</th>
                             <th>Hall</th>
                             <th>Request Date</th>
                             <th>Status</th>
@@ -288,7 +289,7 @@
                     </thead>
                     <tbody id="bookingsTable">
                         <tr>
-                            <td colspan="6" style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
+                            <td colspan="7" style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
                                 No bookings yet
                             </td>
                         </tr>
@@ -459,7 +460,7 @@
             if (bookings.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
                             No bookings yet
                         </td>
                     </tr>
@@ -471,6 +472,7 @@
                 <tr>
                     <td>${index + 1}</td>
                     <td>${booking.user}</td>
+                    <td>${booking.userPhone || 'N/A'}</td>
                     <td>${booking.hall}</td>
                     <td>${new Date(booking.date).toLocaleDateString()}</td>
                     <td>
