@@ -1,4 +1,4 @@
-# 🎊 Shubham Mangal Services - Wedding Booking Website
+# 🎊 Sai Mangal Services - Wedding Booking Website
 
 A premium, fully responsive wedding hall and event services booking website for Nanded City.
 
@@ -180,10 +180,10 @@ Potential additions for production version:
 
 ## 📞 Contact Information
 
-**Shubham Mangal Services**
+**SAI Mangal Services**
 - 📍 Location: Nanded City, Nanded, Maharashtra
-- 📧 Email: info@shubhammangal.com
-- 📱 WhatsApp: +91 78288 20292
+- 📧 Email: info@saimangal.com
+- 📱 WhatsApp: +91 99706 70610
 
 ---
 

@@ -1,6 +1,6 @@
 # 🎉 PROJECT DELIVERY SUMMARY
 
-## ✅ COMPLETED: Shubham Mangal Services - Wedding Booking Website
+## ✅ COMPLETED: Sai Mangal Services - Wedding Booking Website
 
 ---
 
@@ -27,7 +27,7 @@
 ✅ Logout functionality
 
 ### 🏛️ **Function Halls (3 Halls)**
-✅ Shubham Mangalkaryalay - Nanded City
+✅ SAI Mangalkaryalay - Nanded City
 ✅ XYZ Mangal Karyalay - Nanded Cidco
 ✅ ABC Mangal Karyalay - Hudco Nanded
 
@@ -258,8 +258,8 @@ P15/
 ## 📞 **SUPPORT INFORMATION**
 
 The website includes:
-- WhatsApp Contact: 78288 20292
-- Email: info@shubhammangal.com
+- WhatsApp Contact: 9970 670 610
+- Email: info@saimangal.com
 - Location: Nanded City, Maharashtra
 
 ---

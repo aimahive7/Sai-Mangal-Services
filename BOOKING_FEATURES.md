@@ -21,7 +21,7 @@
 ## 💰 **2. DYNAMIC PRICING SYSTEM**
 
 ### **Base Prices**
-- **Shubham Mangalkaryalay**: ₹5,000 (Premium hall)
+- **Sai Mangalkaryalay**: ₹5,000 (Premium hall)
 - **XYZ Mangal Karyalay**: ₹3,000 (Medium hall)
 - **ABC Mangal Karyalay**: ₹2,000 (Standard hall)
 
@@ -128,7 +128,7 @@ All details saved:
 
 ## 💡 **PRICING EXAMPLES**
 
-### **Example 1: Shubham Mangalkaryalay (Premium)**
+### **Example 1: Sai Mangalkaryalay (Premium)**
 | Day | Base Price | Surcharge | Final Price |
 |-----|-----------|----------|-------------|
 | Sunday | ₹5,000 | +₹1,250 (25%) | **₹6,250** |
@@ -188,7 +188,7 @@ Each booking includes:
     user: "user@email.com",
     userName: "Rahul Patil",
     userPhone: "9876543210",
-    hall: "Shubham Mangalkaryalay",
+    hall: "Sai Mangalkaryalay",
     hallLocation: "Nanded City",
     date: "2025-12-15",                    // Selected date
     timeSlot: "morning",                   // or "night"

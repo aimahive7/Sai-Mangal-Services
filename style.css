@@ -1,5 +1,5 @@
 /* ==========================================
-   SHUBHAM MANGAL SERVICES - PREMIUM STYLING
+   SAI MANGAL SERVICES - PREMIUM STYLING
    ========================================== */
 
 /* === RESET & BASE === */
@@ -15,7 +15,7 @@
     --color-secondary: #8B0000; /* Deep Maroon */
     --color-accent: #FFD700; /* Bright Gold */
     --color-dark: #1a0a0a;
-    --color-light: #fff;
+    --color-light: #ffffff;
     --color-gray: #f8f9fa;
     --color-text: #333;
     --color-text-light: #666;
@@ -107,7 +107,7 @@ a {
 
 .btn-secondary {
     background: transparent;
-    color: var(--color-light);
+    color: var(--color-dark);
     border: 2px solid var(--color-primary);
 }
 

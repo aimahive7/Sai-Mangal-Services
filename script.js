@@ -1,5 +1,5 @@
 // ==========================================
-// SHUBHAM MANGAL SERVICES - MAIN JAVASCRIPT
+// SAI MANGAL SERVICES - MAIN JAVASCRIPT
 // ==========================================
 
 // === DATA STRUCTURES ===
@@ -7,7 +7,7 @@
 const hallsData = [
     {
         id: 1,
-        name: "Shubham Mangalkaryalay",
+        name: "Sai Mangal Karyalay",
         location: "Nanded City",
         area: "2500 sq ft",
         capacity: 75,
@@ -64,8 +64,13 @@ const bandServices = [
 ];
 
 const musicServices = [
-    { name: "XXYY", contact: "98398 39843" },
-    { name: "FFFF", contact: "88997 88900" }
+    { name: "Sai Music", contact: "98398 39843" },
+    { name: "Sai dj", contact: "88997 88900" }
+];
+
+const flowerServices = [
+    { name: "Floral Elegance", contact: "77889 33445" },
+    { name: "Bloom Decor", contact: "66778 22334" }
 ];
 
 // === AUTHENTICATION STATE ===
@@ -240,6 +245,11 @@ function renderServices() {
     renderServiceCategory('cateringGrid', cateringServices, 'catering');
     renderServiceCategory('bandGrid', bandServices, 'band');
     renderServiceCategory('musicGrid', musicServices, 'music');
+    renderServiceCategory('flowerGrid', flowerServices, 'flower');
+    renderServiceCategory('mehandiGrid', [
+        { name: "Mehandi Magic", contact: "88776 55443" },
+        { name: "Henna Artistry", contact: "77665 44332" }
+    ], 'mehandi');
 }
 
 function renderServiceCategory(gridId, services, type) {
