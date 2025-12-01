@@ -391,6 +391,13 @@
                         <input type="text" class="form-input" placeholder="Contact Number" required id="serviceContact">
                         <input type="text" class="form-input" placeholder="Beautician/Detail (optional)" id="serviceDetail">
                     </div>
+                    <div class="form-row">
+                        <label style="color:var(--color-light);">Upload Images (optional)</label>
+                        <input type="file" class="form-input" id="serviceImagesInput" accept="image/*" multiple>
+                    </div>
+                    <div id="serviceImagesPreview" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem;">
+                        <!-- image previews with subtitle inputs will appear here -->
+                    </div>
                     <button type="submit" class="btn btn-primary">Add Service</button>
                 </form>
             </div>
@@ -734,7 +741,133 @@
 
         // ========== SERVICES MANAGEMENT ==========
 
-        // Load services
+        // Admin service image state and edit index
+        let adminServiceImages = [];
+        let editingServiceCategory = null;
+        let editingServiceIndex = null;
+
+        function attachServiceFormHandlers() {
+            const form = document.getElementById('addServiceForm');
+            const fileInput = document.getElementById('serviceImagesInput');
+            const preview = document.getElementById('serviceImagesPreview');
+
+            // File input change -> read files and render previews
+            if (fileInput) {
+                fileInput.addEventListener('change', (e) => {
+                    const files = Array.from(e.target.files || []);
+                    adminServiceImages = [];
+                    preview.innerHTML = '';
+
+                    files.forEach((file, idx) => {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            const src = ev.target.result;
+                            const imageObj = { src, subtitle: '' };
+                            adminServiceImages.push(imageObj);
+
+                            const item = document.createElement('div');
+                            item.style.display = 'flex';
+                            item.style.flexDirection = 'column';
+                            item.style.alignItems = 'center';
+                            item.style.gap = '4px';
+
+                            const img = document.createElement('img');
+                            img.src = src;
+                            img.style.width = '120px';
+                            img.style.height = '80px';
+                            img.style.objectFit = 'cover';
+                            img.style.borderRadius = '6px';
+
+                            const sub = document.createElement('input');
+                            sub.type = 'text';
+                            sub.placeholder = 'Image subtitle (optional)';
+                            sub.className = 'form-input';
+                            sub.style.width = '120px';
+                            sub.addEventListener('input', () => {
+                                imageObj.subtitle = sub.value;
+                            });
+
+                            const removeBtn = document.createElement('button');
+                            removeBtn.type = 'button';
+                            removeBtn.className = 'action-btn btn-delete';
+                            removeBtn.textContent = 'Remove';
+                            removeBtn.style.padding = '0.25rem 0.5rem';
+                            removeBtn.addEventListener('click', () => {
+                                const i = adminServiceImages.indexOf(imageObj);
+                                if (i > -1) adminServiceImages.splice(i, 1);
+                                item.remove();
+                            });
+
+                            item.appendChild(img);
+                            item.appendChild(sub);
+                            item.appendChild(removeBtn);
+                            preview.appendChild(item);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                });
+            }
+
+            // Submit handler - unified for add and update
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const category = document.getElementById('serviceCategory').value;
+                if (!category) {
+                    alert('Please select a category');
+                    return;
+                }
+
+                const servicesData = JSON.parse(localStorage.getItem('servicesData') || '{}');
+                if (!servicesData[category]) {
+                    servicesData[category] = [];
+                }
+
+                const services = servicesData[category];
+                const submitBtn = form.querySelector('button');
+
+                if (editingServiceCategory === null) {
+                    // Add new service
+                    const maxId = services.length > 0 ? Math.max(...services.map(s => s.id || 0)) : 0;
+                    const newService = {
+                        id: maxId + 1,
+                        name: document.getElementById('serviceName').value,
+                        contact: document.getElementById('serviceContact').value,
+                        beautician: document.getElementById('serviceDetail').value || undefined,
+                        images: adminServiceImages.length ? adminServiceImages.slice() : undefined
+                    };
+                    services.push(newService);
+                    servicesData[category] = services;
+                    localStorage.setItem('servicesData', JSON.stringify(servicesData));
+                    alert('Service added successfully!');
+                } else {
+                    // Update existing service
+                    servicesData[editingServiceCategory][editingServiceIndex] = {
+                        ...servicesData[editingServiceCategory][editingServiceIndex],
+                        name: document.getElementById('serviceName').value,
+                        contact: document.getElementById('serviceContact').value,
+                        beautician: document.getElementById('serviceDetail').value || undefined,
+                        images: adminServiceImages.length ? adminServiceImages.slice() : servicesData[editingServiceCategory][editingServiceIndex].images
+                    };
+                    localStorage.setItem('servicesData', JSON.stringify(servicesData));
+                    alert('Service updated successfully!');
+                    editingServiceCategory = null;
+                    editingServiceIndex = null;
+                    if (submitBtn) submitBtn.textContent = 'Add Service';
+                }
+
+                // reset
+                form.reset();
+                adminServiceImages = [];
+                const prev = document.getElementById('serviceImagesPreview');
+                if (prev) prev.innerHTML = '';
+
+                loadServices();
+            });
+        }
+
+        // attach handlers at load
+        document.addEventListener('DOMContentLoaded', attachServiceFormHandlers);
         function loadServices() {
             const servicesData = JSON.parse(localStorage.getItem('servicesData') || '{}');
             const container = document.getElementById('servicesContainer');
@@ -756,13 +889,16 @@
                 section.style.marginTop = '1.5rem';
 
                 let html = `<h3 style="color: var(--color-light); margin-top: 0; margin-bottom: 1rem;">${cat.label}</h3>`;
-                html += '<div class="table-container"><table class="data-table"><thead><tr><th>Service Name</th><th>Detail</th><th>Contact</th><th>Actions</th></tr></thead><tbody>';
+                html += '<div class="table-container"><table class="data-table"><thead><tr><th>Image</th><th>Service Name</th><th>Detail</th><th>Contact</th><th>Actions</th></tr></thead><tbody>';
 
                 if (services.length === 0) {
-                    html += `<tr><td colspan="4" style="text-align: center; padding: 1rem; color: rgba(255,255,255,0.5);">No services in this category</td></tr>`;
+                    html += `<tr><td colspan="5" style="text-align: center; padding: 1rem; color: rgba(255,255,255,0.5);">No services in this category</td></tr>`;
                 } else {
-                    html += services.map((service, idx) => `
+                    html += services.map((service, idx) => {
+                        const thumb = (service.images && service.images.length) ? `<img src="${service.images[0].src}" alt="${service.name}" style="width:90px;height:60px;object-fit:cover;border-radius:6px;">` : '-';
+                        return `
                         <tr>
+                            <td style="font-size: 1rem;">${thumb}</td>
                             <td>${service.name}</td>
                             <td>${service.beautician || '-'}</td>
                             <td>${service.contact}</td>
@@ -775,7 +911,7 @@
                                 </button>
                             </td>
                         </tr>
-                    `).join('');
+                    `}).join('');
                 }
 
                 html += '</tbody></table></div>';
@@ -783,40 +919,6 @@
                 container.appendChild(section);
             });
         }
-
-        // Add service
-        document.getElementById('addServiceForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const category = document.getElementById('serviceCategory').value;
-            if (!category) {
-                alert('Please select a category');
-                return;
-            }
-
-            const servicesData = JSON.parse(localStorage.getItem('servicesData') || '{}');
-            if (!servicesData[category]) {
-                servicesData[category] = [];
-            }
-
-            const services = servicesData[category];
-            const maxId = services.length > 0 ? Math.max(...services.map(s => s.id || 0)) : 0;
-
-            const newService = {
-                id: maxId + 1,
-                name: document.getElementById('serviceName').value,
-                contact: document.getElementById('serviceContact').value,
-                beautician: document.getElementById('serviceDetail').value || undefined
-            };
-
-            services.push(newService);
-            servicesData[category] = services;
-            localStorage.setItem('servicesData', JSON.stringify(servicesData));
-
-            this.reset();
-            loadServices();
-            alert('Service added successfully!');
-        });
 
         // Delete service
         function deleteService(category, index) {
@@ -829,41 +931,72 @@
             alert('Service deleted successfully!');
         }
 
-        // Edit service
+        // Edit service - populate form and previews for editing
         function editService(category, index) {
             const servicesData = JSON.parse(localStorage.getItem('servicesData') || '{}');
             const service = servicesData[category][index];
+
+            editingServiceCategory = category;
+            editingServiceIndex = index;
 
             document.getElementById('serviceCategory').value = category;
             document.getElementById('serviceName').value = service.name;
             document.getElementById('serviceContact').value = service.contact;
             document.getElementById('serviceDetail').value = service.beautician || '';
 
+            // Populate image previews from existing service images
+            adminServiceImages = [];
+            const preview = document.getElementById('serviceImagesPreview');
+            preview.innerHTML = '';
+            if (service.images && service.images.length) {
+                service.images.forEach(imgObj => {
+                    const imageObj = { src: imgObj.src, subtitle: imgObj.subtitle || '' };
+                    adminServiceImages.push(imageObj);
+
+                    const item = document.createElement('div');
+                    item.style.display = 'flex';
+                    item.style.flexDirection = 'column';
+                    item.style.alignItems = 'center';
+                    item.style.gap = '4px';
+
+                    const img = document.createElement('img');
+                    img.src = imageObj.src;
+                    img.style.width = '120px';
+                    img.style.height = '80px';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '6px';
+
+                    const sub = document.createElement('input');
+                    sub.type = 'text';
+                    sub.placeholder = 'Image subtitle (optional)';
+                    sub.className = 'form-input';
+                    sub.style.width = '120px';
+                    sub.value = imageObj.subtitle;
+                    sub.addEventListener('input', () => {
+                        imageObj.subtitle = sub.value;
+                    });
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'action-btn btn-delete';
+                    removeBtn.textContent = 'Remove';
+                    removeBtn.style.padding = '0.25rem 0.5rem';
+                    removeBtn.addEventListener('click', () => {
+                        const i = adminServiceImages.indexOf(imageObj);
+                        if (i > -1) adminServiceImages.splice(i, 1);
+                        item.remove();
+                    });
+
+                    item.appendChild(img);
+                    item.appendChild(sub);
+                    item.appendChild(removeBtn);
+                    preview.appendChild(item);
+                });
+            }
+
+            // Change submit button text for clarity
             const submitBtn = document.querySelector('#addServiceForm button');
-            const originalText = submitBtn.textContent;
             submitBtn.textContent = 'Update Service';
-
-            const newForm = document.getElementById('addServiceForm').cloneNode(true);
-            document.getElementById('addServiceForm').replaceWith(newForm);
-
-            newForm.addEventListener('submit', function (e) {
-                e.preventDefault();
-
-                const servicesData = JSON.parse(localStorage.getItem('servicesData') || '{}');
-                servicesData[category][index] = {
-                    ...servicesData[category][index],
-                    name: document.getElementById('serviceName').value,
-                    contact: document.getElementById('serviceContact').value,
-                    beautician: document.getElementById('serviceDetail').value || undefined
-                };
-
-                localStorage.setItem('servicesData', JSON.stringify(servicesData));
-                this.reset();
-                submitBtn.textContent = originalText;
-                loadServices();
-                alert('Service updated successfully!');
-                location.reload();
-            });
 
             window.scrollTo(0, document.getElementById('addServiceForm').offsetTop - 100);
         }
