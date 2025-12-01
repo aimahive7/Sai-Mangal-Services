@@ -23,7 +23,7 @@
 ### **Base Prices**
 - **Sai Mangalkaryalay**: ₹5,000 (Premium hall)
 - **XYZ Mangal Karyalay**: ₹3,000 (Medium hall)
-- **ABC Mangal Karyalay**: ₹2,000 (Standard hall)
+- **VINOD Mangal Karyalay**: ₹2,000 (Standard hall)
 
 ### **Day-Based Pricing** (Exactly as requested!)
 

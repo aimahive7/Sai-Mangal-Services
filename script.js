@@ -34,7 +34,7 @@ const defaultHallsData = [
     },
     {
         id: 3,
-        name: "ABC Mangal Karyalay",
+        name: "VINOD Mangal Karyalay",
         location: "Hudco Nanded",
         area: "1200 sq ft",
         capacity: 40,
@@ -289,7 +289,7 @@ function renderHalls() {
 
         hallsGrid.appendChild(hallCard);
         // Add hover behavior: if hall has multiple images, show 2nd image on hover
-        (function(card, h) {
+        (function (card, h) {
             const imgEl = card.querySelector('.hall-thumb img');
             if (!imgEl || !h.images || h.images.length < 2) return;
 
@@ -338,7 +338,14 @@ function renderServiceCategory(gridId, services, type) {
         const serviceCard = document.createElement('div');
         serviceCard.className = 'service-card';
 
+        // Service image preview: uploaded images or default wedding logo emoji
+        const hasImages = service.images && service.images.length > 0;
+        const imageHtml = hasImages
+            ? `<div class="service-image"><img src="${service.images[0].src}" alt="${service.name}" /></div>`
+            : `<div class="service-image service-image-default">💒</div>`;
+
         let serviceHTML = `
+            ${imageHtml}
             <h4 class="service-name">${service.name}</h4>
         `;
 
@@ -364,6 +371,30 @@ function renderServiceCategory(gridId, services, type) {
 
         serviceCard.innerHTML = serviceHTML;
         grid.appendChild(serviceCard);
+
+        // Add hover effect for multiple images
+        if (hasImages && service.images.length > 1) {
+            const imgEl = serviceCard.querySelector('.service-image img');
+            let cycleInterval = null;
+
+            serviceCard.addEventListener('mouseenter', () => {
+                let i = 1;
+                cycleInterval = setInterval(() => {
+                    imgEl.src = service.images[i].src;
+                    i++;
+                    if (i >= service.images.length) i = 0;
+                }, 800);
+            });
+
+            serviceCard.addEventListener('mouseleave', () => {
+                if (cycleInterval) {
+                    clearInterval(cycleInterval);
+                    cycleInterval = null;
+                }
+                // Revert to first image
+                imgEl.src = service.images[0].src;
+            });
+        }
     });
 }
 

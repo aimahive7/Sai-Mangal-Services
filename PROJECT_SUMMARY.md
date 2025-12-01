@@ -29,7 +29,7 @@
 ### 🏛️ **Function Halls (3 Halls)**
 ✅ SAI Mangalkaryalay - Nanded City
 ✅ XYZ Mangal Karyalay - Nanded Cidco
-✅ ABC Mangal Karyalay - Hudco Nanded
+✅ VINOD Mangal Karyalay - Hudco Nanded
 
 **Each Hall Includes:**
 - Hall specifications (area, capacity, dining, parking)
