@@ -87,6 +87,12 @@ const defaultServicesData = {
         { id: 1, name: "Mehandi Magic", contact: "88776 55443" },
         { id: 2, name: "Henna Artistry", contact: "77665 44332" }
     ]
+    ,
+    photography: [
+        { id: 1, name: "Deepa Photo Studio", contact: "99709 97010" },
+        { id: 2, name: "shyam Rangila", contact: "99879 98787" },
+        { id: 3, name: "Vibhav Bidwai", contact: "99809 98099" }
+    ]
 };
 
 // Get services from localStorage or use defaults
@@ -108,6 +114,7 @@ function getBandServices() { return servicesData.band || []; }
 function getMusicServices() { return servicesData.music || []; }
 function getFlowerServices() { return servicesData.flower || []; }
 function getMehandiServices() { return servicesData.mehandi || []; }
+function getPhotographyServices() { return servicesData.photography || []; }
 
 // Save halls to localStorage
 function saveHalls() {
@@ -117,6 +124,13 @@ function saveHalls() {
 // Save services to localStorage
 function saveServices() {
     localStorage.setItem('servicesData', JSON.stringify(servicesData));
+}
+
+// Return true if the logged-in user has at least one confirmed hall booking
+function userHasConfirmedHallBooking() {
+    if (!currentUser || !currentUser.email) return false;
+    const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    return bookings.some(b => b.user === currentUser.email && b.status === 'confirmed');
 }
 
 // === AUTHENTICATION STATE ===
@@ -328,6 +342,7 @@ function renderServices() {
     renderServiceCategory('musicGrid', getMusicServices(), 'music');
     renderServiceCategory('flowerGrid', getFlowerServices(), 'flower');
     renderServiceCategory('mehandiGrid', getMehandiServices(), 'mehandi');
+    renderServiceCategory('photographyGrid', getPhotographyServices(), 'photography');
 }
 
 function renderServiceCategory(gridId, services, type) {
@@ -353,17 +368,19 @@ function renderServiceCategory(gridId, services, type) {
             serviceHTML += `<p class="service-detail">Beautician: ${service.beautician}</p>`;
         }
 
-        if (currentUser) {
+        if (currentUser && userHasConfirmedHallBooking()) {
             serviceHTML += `
                 <div class="service-contact">
                     📞 ${service.contact}
                 </div>
             `;
         } else {
+            const promptHandler = (!currentUser) ? 'showLoginPrompt()' : 'showBookingRequiredPrompt()';
+            const promptText = !currentUser ? '🔒 Login Required to View Contact' : '🔒 Contacts available after your hall booking is confirmed';
             serviceHTML += `
                 <div class="service-contact">
-                    <span class="contact-locked" onclick="showLoginPrompt()">
-                        🔒 Login Required to View Contact
+                    <span class="contact-locked" onclick="${promptHandler}">
+                        ${promptText}
                     </span>
                 </div>
             `;
@@ -454,6 +471,14 @@ function showLoginPrompt() {
     showNotification('Please login to view contact details and book services', 'info');
 }
 
+function showBookingRequiredPrompt() {
+    if (!currentUser) {
+        showLoginPrompt();
+        return;
+    }
+    showNotification('Your hall booking must be approved by admin before contacts are revealed.', 'info');
+}
+
 function openHallDetails(hall) {
     const modalBody = document.getElementById('hallModalBody');
 
@@ -507,14 +532,14 @@ function openHallDetails(hall) {
             </div>
         </div>
 
-        ${currentUser ? `
+        ${currentUser && userHasConfirmedHallBooking() ? `
             <div style="background: var(--color-gray); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
                 <h4 style="margin-bottom: 0.5rem;">Contact Information</h4>
                 <p style="font-size: 1.2rem; color: var(--color-secondary); font-weight: 600;">📞 ${hall.contact}</p>
             </div>
         ` : `
             <div style="background: #fff3cd; padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border-left: 4px solid var(--color-primary);">
-                <p style="color: #856404; margin: 0;">🔒 Please <strong onclick="showLoginPrompt()" style="cursor: pointer; text-decoration: underline;">login</strong> to view contact information</p>
+                <p style="color: #856404; margin: 0;">${!currentUser ? `🔒 Please <strong onclick="showLoginPrompt()" style="cursor: pointer; text-decoration: underline;">login</strong> to view contact information` : '🔒 Contacts available after your hall booking is confirmed. Please wait for admin approval.'}</p>
             </div>
         `}
 
