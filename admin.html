@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Shubham Mangal Services</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 2rem 2rem;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #0a0404 0%, #1a0a0a 100%);
+        }
+
+        .admin-header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .admin-title {
+            color: var(--color-primary);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            transition: all var(--transition-normal);
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .dashboard-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title-admin {
+            color: var(--color-light);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .data-table th {
+            color: var(--color-primary);
+            font-weight: 600;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .data-table td {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background: #fbbf24;
+            color: #000;
+        }
+
+        .status-confirmed {
+            background: #10b981;
+            color: white;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-approve {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #059669;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .add-form {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-input {
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-light);
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">💍</span>
+                <span class="logo-text">Shubham Mangal - Admin</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Back to Website</a>
+                <button class="btn-login" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="admin-header">
+            <h1 class="admin-title">Admin Dashboard</h1>
+            <p class="admin-subtitle">Manage bookings, halls, and services</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-label">Total Bookings</div>
+                <div class="stat-value" id="totalBookings">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-label">Pending Bookings</div>
+                <div class="stat-value" id="pendingBookings">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value" id="totalUsers">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏛️</div>
+                <div class="stat-label">Total Halls</div>
+                <div class="stat-value" id="totalHalls">3</div>
+            </div>
+        </div>
+
+        <!-- Bookings Management -->
+        <div class="dashboard-section">
+            <h2 class="section-title-admin">
+                <span>📋</span>
+                Booking Requests
+            </h2>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User Email</th>
+                            <th>Hall</th>
+                            <th>Request Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingsTable">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
+                                No bookings yet
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Users Management -->
+        <div class="dashboard-section">
+            <h2 class="section-title-admin">
+                <span>👥</span>
+                Registered Users
+            </h2>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Mobile</th>
+                            <th>Registration Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
+                                No users registered yet
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add New Hall -->
+        <div class="dashboard-section">
+            <h2 class="section-title-admin">
+                <span>➕</span>
+                Add New Hall
+            </h2>
+            <form class="add-form" id="addHallForm">
+                <div class="form-row">
+                    <input type="text" class="form-input" placeholder="Hall Name" required id="hallName">
+                    <input type="text" class="form-input" placeholder="Location" required id="hallLocation">
+                </div>
+                <div class="form-row">
+                    <input type="text" class="form-input" placeholder="Area (sq ft)" required id="hallArea">
+                    <input type="number" class="form-input" placeholder="Stage Capacity" required id="hallCapacity">
+                </div>
+                <div class="form-row">
+                    <input type="text" class="form-input" placeholder="Dining Area" required id="hallDining">
+                    <input type="text" class="form-input" placeholder="Parking Space" required id="hallParking">
+                </div>
+                <div class="form-row">
+                    <input type="text" class="form-input" placeholder="Contact Number" required id="hallContact">
+                    <input type="text" class="form-input" placeholder="Google Maps Link" required id="hallMap">
+                </div>
+                <button type="submit" class="btn btn-primary">Add Hall</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Load statistics
+        function loadStats() {
+            const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+
+            document.getElementById('totalBookings').textContent = bookings.length;
+            document.getElementById('pendingBookings').textContent =
+                bookings.filter(b => b.status === 'pending').length;
+            document.getElementById('totalUsers').textContent = users.length;
+        }
+
+        // Load bookings
+        function loadBookings() {
+            const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+            const tbody = document.getElementById('bookingsTable');
+
+            if (bookings.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
+                            No bookings yet
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = bookings.map((booking, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${booking.user}</td>
+                    <td>${booking.hall}</td>
+                    <td>${new Date(booking.date).toLocaleDateString()}</td>
+                    <td>
+                        <span class="status-badge status-${booking.status}">
+                            ${booking.status.toUpperCase()}
+                        </span>
+                    </td>
+                    <td>
+                        ${booking.status === 'pending' ?
+                    `<button class="action-btn btn-approve" onclick="approveBooking(${index})">
+                                Approve
+                            </button>` : ''}
+                        <button class="action-btn btn-delete" onclick="deleteBooking(${index})">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Load users
+        function loadUsers() {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const tbody = document.getElementById('usersTable');
+
+            if (users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
+                            No users registered yet
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.mobile || 'N/A'}</td>
+                    <td>${user.registrationDate ? new Date(user.registrationDate).toLocaleDateString() : 'N/A'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Approve booking
+        function approveBooking(index) {
+            const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+            bookings[index].status = 'confirmed';
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+            loadBookings();
+            loadStats();
+            alert('Booking approved successfully!');
+        }
+
+        // Delete booking
+        function deleteBooking(index) {
+            if (!confirm('Are you sure you want to delete this booking?')) return;
+
+            const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+            bookings.splice(index, 1);
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+            loadBookings();
+            loadStats();
+            alert('Booking deleted successfully!');
+        }
+
+        // Add hall form
+        document.getElementById('addHallForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            alert('Hall addition feature is for demonstration. In production, this would save to a database.');
+            this.reset();
+        });
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            loadStats();
+            loadBookings();
+            loadUsers();
+
+            // Refresh every 5 seconds
+            setInterval(() => {
+                loadStats();
+                loadBookings();
+                loadUsers();
+            }, 5000);
+        });
+    </script>
+</body>
+
+</html>
