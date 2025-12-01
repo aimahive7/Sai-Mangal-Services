@@ -4,7 +4,8 @@
 
 // === DATA STRUCTURES ===
 
-const hallsData = [
+// Initialize default halls data
+const defaultHallsData = [
     {
         id: 1,
         name: "Sai Mangal Karyalay",
@@ -16,7 +17,7 @@ const hallsData = [
         contact: "78288 20292",
         mapLink: "https://maps.google.com/?q=Nanded+City+Nanded",
         image: "🏛️",
-        basePrice: 5000 // Premium hall
+        basePrice: 5000
     },
     {
         id: 2,
@@ -29,7 +30,7 @@ const hallsData = [
         contact: "23433 09324",
         mapLink: "https://maps.google.com/?q=Nanded+Cidco",
         image: "🏰",
-        basePrice: 3000 // Medium hall
+        basePrice: 3000
     },
     {
         id: 3,
@@ -42,36 +43,81 @@ const hallsData = [
         contact: "23498 39823",
         mapLink: "https://maps.google.com/?q=Hudco+Nanded",
         image: "🏛️",
-        basePrice: 2000 // Standard hall
+        basePrice: 2000
     }
 ];
 
-const beautyServices = [
-    { name: "Kranti Parlour", beautician: "Kranti Gore", contact: "12233 44556" },
-    { name: "Kirti Parlour", beautician: "Kranti Shinde", contact: "55343 11335" },
-    { name: "Shanti Parlour", beautician: "Shanti Shise", contact: "78839 49940" },
-    { name: "Shila Parlour", beautician: "Shila", contact: "99876 38332" }
-];
+// Get halls from localStorage or use defaults
+function getHallsData() {
+    const stored = localStorage.getItem('hallsData');
+    if (stored) {
+        return JSON.parse(stored);
+    }
+    localStorage.setItem('hallsData', JSON.stringify(defaultHallsData));
+    return defaultHallsData;
+}
 
-const cateringServices = [
-    { name: "Madhu Shine", contact: "83939 93939" },
-    { name: "Shitlesh SS", contact: "30989 43432" },
-    { name: "Sai", contact: "84939 20022" }
-];
+let hallsData = getHallsData();
 
-const bandServices = [
-    { name: "XYZ Band", contact: "11111 22222" }
-];
+// Initialize default services data
+const defaultServicesData = {
+    beauty: [
+        { id: 1, name: "Kranti Parlour", beautician: "Kranti Gore", contact: "12233 44556" },
+        { id: 2, name: "Kirti Parlour", beautician: "Kranti Shinde", contact: "55343 11335" },
+        { id: 3, name: "Shanti Parlour", beautician: "Shanti Shise", contact: "78839 49940" },
+        { id: 4, name: "Shila Parlour", beautician: "Shila", contact: "99876 38332" }
+    ],
+    catering: [
+        { id: 1, name: "Madhu Shine", contact: "83939 93939" },
+        { id: 2, name: "Shitlesh SS", contact: "30989 43432" },
+        { id: 3, name: "Sai", contact: "84939 20022" }
+    ],
+    band: [
+        { id: 1, name: "XYZ Band", contact: "11111 22222" }
+    ],
+    music: [
+        { id: 1, name: "Sai Music", contact: "98398 39843" },
+        { id: 2, name: "Sai dj", contact: "88997 88900" }
+    ],
+    flower: [
+        { id: 1, name: "Floral Elegance", contact: "77889 33445" },
+        { id: 2, name: "Bloom Decor", contact: "66778 22334" }
+    ],
+    mehandi: [
+        { id: 1, name: "Mehandi Magic", contact: "88776 55443" },
+        { id: 2, name: "Henna Artistry", contact: "77665 44332" }
+    ]
+};
 
-const musicServices = [
-    { name: "Sai Music", contact: "98398 39843" },
-    { name: "Sai dj", contact: "88997 88900" }
-];
+// Get services from localStorage or use defaults
+function getServicesData() {
+    const stored = localStorage.getItem('servicesData');
+    if (stored) {
+        return JSON.parse(stored);
+    }
+    localStorage.setItem('servicesData', JSON.stringify(defaultServicesData));
+    return defaultServicesData;
+}
 
-const flowerServices = [
-    { name: "Floral Elegance", contact: "77889 33445" },
-    { name: "Bloom Decor", contact: "66778 22334" }
-];
+let servicesData = getServicesData();
+
+// Helper functions to get individual service arrays
+function getBeautyServices() { return servicesData.beauty || []; }
+function getCateringServices() { return servicesData.catering || []; }
+function getBandServices() { return servicesData.band || []; }
+function getMusicServices() { return servicesData.music || []; }
+function getFlowerServices() { return servicesData.flower || []; }
+function getMehandiServices() { return servicesData.mehandi || []; }
+
+// Save halls to localStorage
+function saveHalls() {
+    localStorage.setItem('hallsData', JSON.stringify(hallsData));
+}
+
+// Save services to localStorage
+function saveServices() {
+    localStorage.setItem('servicesData', JSON.stringify(servicesData));
+}
 
 // === AUTHENTICATION STATE ===
 let currentUser = null;
@@ -197,8 +243,13 @@ function renderHalls() {
         hallCard.className = 'hall-card';
         hallCard.onclick = () => openHallDetails(hall);
 
+        // Thumbnail: prefer first image if available, fallback to emoji
+        const thumbHtml = (hall.images && hall.images.length) ?
+            `<img src="${hall.images[0].src}" alt="${hall.name}" style="width:100%;height:140px;object-fit:cover;border-radius:8px;">` :
+            `<div class="hall-image">${hall.image || '🏛️'}</div>`;
+
         hallCard.innerHTML = `
-            <div class="hall-image">${hall.image}</div>
+            <div class="hall-thumb">${thumbHtml}</div>
             <div class="hall-content">
                 <h3 class="hall-name">${hall.name}</h3>
                 <div class="hall-location">📍 ${hall.location}</div>
@@ -237,19 +288,46 @@ function renderHalls() {
         `;
 
         hallsGrid.appendChild(hallCard);
+        // Add hover behavior: if hall has multiple images, show 2nd image on hover
+        (function(card, h) {
+            const imgEl = card.querySelector('.hall-thumb img');
+            if (!imgEl || !h.images || h.images.length < 2) return;
+
+            let cycleInterval = null;
+            card.addEventListener('mouseenter', () => {
+                if (!h.images) return;
+                if (h.images.length === 2) {
+                    imgEl.src = h.images[1].src;
+                } else if (h.images.length > 2) {
+                    // start cycling from second image
+                    let i = 1;
+                    cycleInterval = setInterval(() => {
+                        imgEl.src = h.images[i].src;
+                        i++;
+                        if (i >= h.images.length) i = 1;
+                    }, 800);
+                }
+            });
+
+            card.addEventListener('mouseleave', () => {
+                if (cycleInterval) {
+                    clearInterval(cycleInterval);
+                    cycleInterval = null;
+                }
+                // revert to first image
+                if (h.images && h.images.length) imgEl.src = h.images[0].src;
+            });
+        })(hallCard, hall);
     });
 }
 
 function renderServices() {
-    renderServiceCategory('beautyGrid', beautyServices, 'beauty');
-    renderServiceCategory('cateringGrid', cateringServices, 'catering');
-    renderServiceCategory('bandGrid', bandServices, 'band');
-    renderServiceCategory('musicGrid', musicServices, 'music');
-    renderServiceCategory('flowerGrid', flowerServices, 'flower');
-    renderServiceCategory('mehandiGrid', [
-        { name: "Mehandi Magic", contact: "88776 55443" },
-        { name: "Henna Artistry", contact: "77665 44332" }
-    ], 'mehandi');
+    renderServiceCategory('beautyGrid', getBeautyServices(), 'beauty');
+    renderServiceCategory('cateringGrid', getCateringServices(), 'catering');
+    renderServiceCategory('bandGrid', getBandServices(), 'band');
+    renderServiceCategory('musicGrid', getMusicServices(), 'music');
+    renderServiceCategory('flowerGrid', getFlowerServices(), 'flower');
+    renderServiceCategory('mehandiGrid', getMehandiServices(), 'mehandi');
 }
 
 function renderServiceCategory(gridId, services, type) {
@@ -348,13 +426,37 @@ function showLoginPrompt() {
 function openHallDetails(hall) {
     const modalBody = document.getElementById('hallModalBody');
 
+    // Build images area (carousel-like) if images array exists
+    let imagesSection = '';
+    if (hall.images && hall.images.length) {
+        const mainSrc = hall.images[0].src;
+        const mainSubtitle = hall.images[0].subtitle || '';
+        const thumbs = hall.images.map((img, i) => ` <img class="hall-detail-thumb" data-index="${i}" src="${img.src}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid transparent;"> `).join('');
+
+        imagesSection = `
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <div style="max-width:720px;margin:0 auto;">
+                    <div style="height:360px; display:flex; align-items:center; justify-content:center; background:var(--color-gray); border-radius:8px; overflow:hidden;">
+                        <img id="hallMainImg" src="${mainSrc}" alt="${hall.name}" style="width:100%; height:100%; object-fit:cover;">
+                    </div>
+                    <div id="hallImageSubtitle" style="margin-top:0.5rem; color:var(--color-text-light); font-size:0.95rem;">${mainSubtitle}</div>
+                    <div style="display:flex; gap:0.5rem; justify-content:center; margin-top:0.75rem;">${thumbs}</div>
+                </div>
+            </div>
+        `;
+    } else {
+        imagesSection = `
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 5rem; margin-bottom: 1rem;">${hall.image || '🏛️'}</div>
+                <h2 style="color: var(--color-secondary); margin-bottom: 0.5rem;">${hall.name}</h2>
+                <p style="color: var(--color-text-light); font-size: 1.1rem;">📍 ${hall.location}</p>
+            </div>
+        `;
+    }
+
     modalBody.innerHTML = `
-        <div style="text-align: center; margin-bottom: 2rem;">
-            <div style="font-size: 5rem; margin-bottom: 1rem;">${hall.image}</div>
-            <h2 style="color: var(--color-secondary); margin-bottom: 0.5rem;">${hall.name}</h2>
-            <p style="color: var(--color-text-light); font-size: 1.1rem;">📍 ${hall.location}</p>
-        </div>
-        
+        ${imagesSection}
+
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
             <div class="spec-item">
                 <span class="spec-label">Hall Area</span>
@@ -373,7 +475,7 @@ function openHallDetails(hall) {
                 <span class="spec-value">${hall.parking}</span>
             </div>
         </div>
-        
+
         ${currentUser ? `
             <div style="background: var(--color-gray); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
                 <h4 style="margin-bottom: 0.5rem;">Contact Information</h4>
@@ -384,7 +486,7 @@ function openHallDetails(hall) {
                 <p style="color: #856404; margin: 0;">🔒 Please <strong onclick="showLoginPrompt()" style="cursor: pointer; text-decoration: underline;">login</strong> to view contact information</p>
             </div>
         `}
-        
+
         <div style="display: flex; gap: 1rem;">
             <a href="${hall.mapLink}" target="_blank" class="btn btn-secondary" style="flex: 1; text-align: center;">
                 📍 View on Map
@@ -399,6 +501,24 @@ function openHallDetails(hall) {
         }
         </div>
     `;
+
+    // Wire up thumbnail clicks to change main image/subtitle
+    if (hall.images && hall.images.length) {
+        const mainImg = modalBody.querySelector('#hallMainImg');
+        const subtitleEl = modalBody.querySelector('#hallImageSubtitle');
+        const thumbs = modalBody.querySelectorAll('.hall-detail-thumb');
+        thumbs.forEach(t => {
+            t.addEventListener('click', (ev) => {
+                const idx = parseInt(t.dataset.index, 10);
+                mainImg.src = hall.images[idx].src;
+                subtitleEl.textContent = hall.images[idx].subtitle || '';
+                thumbs.forEach(x => x.style.borderColor = 'transparent');
+                t.style.borderColor = 'var(--color-secondary)';
+            });
+        });
+        // highlight first
+        if (thumbs[0]) thumbs[0].style.borderColor = 'var(--color-secondary)';
+    }
 
     openModal('hallModal');
 }

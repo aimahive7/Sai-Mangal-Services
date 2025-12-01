@@ -259,7 +259,7 @@ P15/
 
 The website includes:
 - WhatsApp Contact: 9970 670 610
-- Email: info@saimangal.com
+- Email: info@sai-mangal.com
 - Location: Nanded City, Maharashtra
 
 ---
