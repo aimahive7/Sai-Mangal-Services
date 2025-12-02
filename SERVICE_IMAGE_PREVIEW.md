@@ -45,11 +45,15 @@ Services in the "Complete Wedding Solutions" section now support image previews.
 - Each service can have multiple images with optional subtitles
 - Images persist across browser sessions
 
-### CSS Enhancements
-- New `.service-image` class for image container (180px height)
+- ### CSS Enhancements
+- New `.service-image`, `.hall-image`, and `.hall-thumb` boxes use a consistent `16:9` aspect ratio (via `aspect-ratio` with a padding-top fallback).
 - Default emoji styling with `.service-image-default`
 - Hover effects including scale transform and overlay gradients
 - Flexbox layout for better card organization
+
+### Gallery / Hall Preview Updates
+- Hall thumbnails and service image previews are now constrained to 16:9 for consistent visuals.
+- Thumbnails use `object-fit: cover` so images remain cropped centrally.
 
 ## Usage Instructions
 

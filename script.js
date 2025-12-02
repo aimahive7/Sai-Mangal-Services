@@ -259,7 +259,7 @@ function renderHalls() {
 
         // Thumbnail: prefer first image if available, fallback to emoji
         const thumbHtml = (hall.images && hall.images.length) ?
-            `<img src="${hall.images[0].src}" alt="${hall.name}" style="width:100%;height:140px;object-fit:cover;border-radius:8px;">` :
+            `<img src="${hall.images[0].src}" alt="${hall.name}" loading="lazy" class="hall-thumb-img">` :
             `<div class="hall-image">${hall.image || '🏛️'}</div>`;
 
         hallCard.innerHTML = `
@@ -356,7 +356,7 @@ function renderServiceCategory(gridId, services, type) {
         // Service image preview: uploaded images or default wedding logo emoji
         const hasImages = service.images && service.images.length > 0;
         const imageHtml = hasImages
-            ? `<div class="service-image"><img src="${service.images[0].src}" alt="${service.name}" /></div>`
+            ? `<div class="service-image"><img src="${service.images[0].src}" alt="${service.name}" loading="lazy" /></div>`
             : `<div class="service-image service-image-default">💒</div>`;
 
         let serviceHTML = `
@@ -487,13 +487,13 @@ function openHallDetails(hall) {
     if (hall.images && hall.images.length) {
         const mainSrc = hall.images[0].src;
         const mainSubtitle = hall.images[0].subtitle || '';
-        const thumbs = hall.images.map((img, i) => ` <img class="hall-detail-thumb" data-index="${i}" src="${img.src}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid transparent;"> `).join('');
+        const thumbs = hall.images.map((img, i) => ` <img class="hall-detail-thumb" data-index="${i}" src="${img.src}" loading="lazy" style="cursor:pointer;border:2px solid transparent;"> `).join('');
 
         imagesSection = `
             <div style="text-align: center; margin-bottom: 1rem;">
                 <div style="max-width:720px;margin:0 auto;">
-                    <div style="height:360px; display:flex; align-items:center; justify-content:center; background:var(--color-gray); border-radius:8px; overflow:hidden;">
-                        <img id="hallMainImg" src="${mainSrc}" alt="${hall.name}" style="width:100%; height:100%; object-fit:cover;">
+                        <div style="height:360px; display:flex; align-items:center; justify-content:center; background:var(--color-gray); border-radius:8px; overflow:hidden;">
+                        <img id="hallMainImg" src="${mainSrc}" alt="${hall.name}" loading="lazy" style="width:100%; height:100%; object-fit:cover;">
                     </div>
                     <div id="hallImageSubtitle" style="margin-top:0.5rem; color:var(--color-text-light); font-size:0.95rem;">${mainSubtitle}</div>
                     <div style="display:flex; gap:0.5rem; justify-content:center; margin-top:0.75rem;">${thumbs}</div>

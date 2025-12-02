@@ -435,7 +435,9 @@ a {
 
 .hall-image {
     width: 100%;
-    height: 250px;
+    /* Keep 16:9 aspect ratio */
+    aspect-ratio: 16 / 9;
+    min-height: 120px; /* fall back visual height */
     background: var(--gradient-dark);
     display: flex;
     align-items: center;
@@ -443,6 +445,8 @@ a {
     font-size: 3rem;
     position: relative;
     overflow: hidden;
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
 }
 
 .hall-image::before {
@@ -453,6 +457,57 @@ a {
     right: 0;
     bottom: 0;
     background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(139, 0, 0, 0.2) 100%);
+}
+
+/* Hall thumbnail wrapper: ensure 16:9 and proper image fit */
+.hall-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: 120px;
+    overflow: hidden;
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
+    position: relative;
+    background: var(--gradient-dark);
+}
+
+.hall-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
+}
+
+/* Modal thumbnail styles */
+.hall-detail-thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+/* Fallback for browsers without aspect-ratio */
+@supports not (aspect-ratio: 16/9) {
+    .hall-image, .hall-thumb, .service-image {
+        height: 0;
+        padding-top: 56.25%; /* 9/16 => 56.25% */
+    }
+    .hall-image, .hall-thumb, .service-image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .hall-thumb img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+    }
 }
 
 .hall-content {
@@ -555,7 +610,8 @@ a {
 /* Service Image */
 .service-image {
     width: 100%;
-    height: 180px;
+    aspect-ratio: 16 / 9;
+    min-height: 120px;
     border-radius: var(--radius-sm);
     overflow: hidden;
     background: var(--gradient-dark);
